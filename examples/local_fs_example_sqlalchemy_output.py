@@ -9,13 +9,38 @@ from sqlalchemy.orm import declarative_base
 from relationalize import Relationalize, Schema, MssqlDialect
 from relationalize.utils import create_local_file
 
+
+def aggregate_json_files(directory):
+    """
+    Aggregates all JSON arrays from files in the specified directory into a single file.
+
+    Args:
+        directory (str): The path to the directory containing the JSON files.
+    """
+    # Extract the name of the directory
+    dir_name = os.path.basename(directory.rstrip("/"))
+    output_file = f"{dir_name}.json"
+    output_path = os.path.join(os.path.dirname(directory), output_file)
+
+    with open(output_path, 'w') as outfile:
+        for filename in os.listdir(directory):
+            if filename.endswith(".json"):
+                file_path = os.path.join(directory, filename)
+                with open(file_path, 'r') as infile:
+                    data = json.load(infile)
+                    for item in data:
+                        outfile.write(json.dumps(item) + "\n")
+
+    return output_file
+
+
 # This example utilizes the local file system as a temporary storage location.
 TEMP_OUTPUT_DIR = "output/temp"
 FINAL_OUTPUT_DIR = "output/final"
 INPUT_DIR = "example_data"
 
-INPUT_FILENAME = "mock_lms_data.json"
-OBJECT_NAME = "users"
+INPUT_FILENAME = aggregate_json_files(r'example_data\journeys')
+OBJECT_NAME = "journeys"
 
 
 def create_iterator(filename):
