@@ -207,7 +207,7 @@ class Schema:
         return Schema(schema=json.loads(content))
 
     def _read_write_object_key(self, key, value):
-        value_type = Schema._parse_type(value)
+        value_type = self._parse_type(value)
         if key not in self.schema:
             # Key has not been encountered yet. Set type in schema to type of value.
             self.schema[key] = value_type
