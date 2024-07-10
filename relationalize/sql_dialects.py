@@ -1,4 +1,7 @@
-from typing import Dict, List
+from typing import Dict, List, Type
+from sqlalchemy import Integer, String, Float, NVARCHAR
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 
 _COLUMN_SEPERATOR = "\n    , "
 
@@ -13,6 +16,7 @@ class SQLDialect:
 
     type_column_mapping: Dict[str, str]
     base_ddl: str
+    type_sa_mapping: Dict[str, Type]
 
     @staticmethod
     def generate_ddl_column(column_name: str, column_type: str):
@@ -49,6 +53,15 @@ CREATE TABLE IF NOT EXISTS "{schema}"."{table_name}" (
 );
     """.strip()
 
+    type_sa_mapping: Dict[str, Type] = {
+        "int": Integer,
+        "float": Float,
+        "str": String,
+        "bool": Integer,
+        "none": String,
+        "uuid": UUID,
+    }
+
     @staticmethod
     def generate_ddl_column(column_name: str, column_type: str):
         cleaned_column_name = column_name.replace('"', '""')
@@ -74,6 +87,15 @@ CREATE TABLE [{schema}].[{table_name}] (
     {columns}
 );
     """.strip()
+
+    type_sa_mapping: Dict[str, Type] = {
+        "int": Integer,
+        "float": Float,
+        "str": NVARCHAR(4000),
+        "bool": Integer,
+        "none": String,
+        "uuid": UNIQUEIDENTIFIER,
+    }
 
     @staticmethod
     def generate_ddl_column(column_name: str, column_type: str):

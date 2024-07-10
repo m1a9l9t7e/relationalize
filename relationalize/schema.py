@@ -1,6 +1,7 @@
 import json
 import uuid
 from typing import Any, Dict, Optional
+from sqlalchemy import Table, Column
 
 from .sql_dialects import PostgresDialect, SQLDialect
 
@@ -317,6 +318,11 @@ class Schema:
                     key
                 ] = f"{Schema._CHOICE_SEQUENCE}{Schema._CHOICE_DELIMITER.join(sorted(choices))}"
         return Schema(schema=merged_schema)
+
+    def create_table(self, table_name: str, metadata):
+        columns = [Column(col_name, self.sql_dialect.type_sa_mapping.get(col_type))
+                   for col_name, col_type in self.schema.items()]
+        return Table(table_name, metadata, *columns, extend_existing=True)
 
     @staticmethod
     def _parse_type(value):
