@@ -186,6 +186,28 @@ class Schema:
             del self.schema[column]
         return len(columns_to_drop)
 
+    def merge_multi_choice_columns(self) -> int:
+        """
+        Merges multi-choice columns by finding the all-inclusive type
+        """
+        inclusiveness_asc = ['bool', 'int', 'float', 'str']
+        type_to_inclusiveness = {_type: i for i, _type in enumerate(inclusiveness_asc)}
+        inclusiveness_to_type = {i: _type for _type, i in type_to_inclusiveness.items()}
+
+        for key, val in self.schema.items():
+            # key is in the new schema already and has different type
+            inclusiveness = 0
+            choices: set[str] = set()
+            if Schema._CHOICE_SEQUENCE in val:
+                for t in val[2:].split(Schema._CHOICE_DELIMITER):
+                    if t == "none":
+                        continue
+                    if t == "uuid":
+                        t = 'str'
+                    choices.add(t)
+                all_inclusive_type = inclusiveness_to_type[max([type_to_inclusiveness.get(t) for t in choices])]
+                self.schema[key] = all_inclusive_type
+
     def read_object(self, object: Dict):
         """
         Read an object and merge into the current schema.
