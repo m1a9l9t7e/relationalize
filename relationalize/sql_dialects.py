@@ -53,3 +53,29 @@ CREATE TABLE IF NOT EXISTS "{schema}"."{table_name}" (
     def generate_ddl_column(column_name: str, column_type: str):
         cleaned_column_name = column_name.replace('"', '""')
         return f'"{cleaned_column_name}" {column_type}'
+
+
+class MssqlDialect(SQLDialect):
+    """
+    Inherits from `SQLDialect` and implements the MSSQL syntax.
+    """
+
+    type_column_mapping: Dict[str, str] = {
+        "int": "BIGINT",
+        "float": "FLOAT",
+        "str": "NVARCHAR(4000)",
+        "bool": "BIT",
+        "none": "BIT",
+        "uuid": "UNIQUEIDENTIFIER",
+    }
+
+    base_ddl: str = """
+CREATE TABLE [{schema}].[{table_name}] (
+    {columns}
+);
+    """.strip()
+
+    @staticmethod
+    def generate_ddl_column(column_name: str, column_type: str):
+        cleaned_column_name = column_name.replace('"', '""')
+        return f'[{cleaned_column_name}] {column_type}'
