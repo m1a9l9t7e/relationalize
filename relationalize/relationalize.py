@@ -116,6 +116,6 @@ class Relationalize:
     @staticmethod
     def _generate_rid():
         """
-        Generates a relationalize ID. EX:`R_2d0418f3b5de415086f1297cf0a9d9a5`
+        Generates a relationalize ID compatible with PostgreSQL's "UUID" and Mssql's "uniqueidentifier" types.
         """
-        return f"{_ID_PREFIX}{_DELIMITER}{uuid4().hex}"
+        return str(uuid4())

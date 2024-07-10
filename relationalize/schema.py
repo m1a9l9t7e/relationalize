@@ -1,4 +1,5 @@
 import json
+import uuid
 from typing import Any, Dict, Optional
 
 from .sql_dialects import PostgresDialect, SQLDialect
@@ -307,7 +308,15 @@ class Schema:
         if isinstance(value, float):
             return "float"
         if isinstance(value, str):
-            return "str"
+            return "uuid" if is_valid_uuid(value) else "str"
         if value is None:
             return "none"
         return f"unsupported:{type(value)}"
+
+
+def is_valid_uuid(val):
+    try:
+        uuid.UUID(str(val))
+        return True
+    except ValueError:
+        return False

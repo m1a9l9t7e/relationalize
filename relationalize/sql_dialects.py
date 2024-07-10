@@ -40,6 +40,7 @@ class PostgresDialect(SQLDialect):
         "str": "VARCHAR(65535)",
         "bool": "BOOLEAN",
         "none": "BOOLEAN",
+        "uuid": "UUID",
     }
 
     base_ddl: str = """
