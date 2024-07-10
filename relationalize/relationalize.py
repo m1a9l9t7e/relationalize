@@ -99,7 +99,7 @@ class Relationalize:
                     path, self._list_helper(id, index, row, path=path), is_sub=True
                 )
 
-            return {path: id}
+            return {f"{path_prefix}{_ID}": id}
 
         if isinstance(d, dict):
             temp_d = {}
